@@ -1,4 +1,5 @@
 ﻿using ETicaretAPI.Domain.Entities;
+using ETicaretAPI.Domain.Entities.Common;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -19,5 +20,28 @@ namespace ETicaretAPI.Persistence.Contexts
         public DbSet<Order> Orders { get; set; }
         public DbSet<Customer> Customers { get; set; }
 
+
+        // Eğer yeni veri girişi olduysa şunun tarihini CreatedTime oluştur eğer değil varolan veri üzerinde update işlemi yapıldıysa updateTime girişini doldur bloğudur.=> bunu da  ChangeTracker contex in proportieslerinden olan bu fonksiyon yakalar. Dikkat et buraya
+
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        { // bunu kullanmamızın sebebi de WriteRepository de bulunan =>
+          //public async Task<int> SaveAsync()
+          //   => await _context.SaveChangesAsync();
+            var datas = ChangeTracker.Entries<BaseEntity>();
+            foreach (var data in datas)
+            {
+                _ = data.State switch
+                {
+                    EntityState.Added => data.Entity.CreatedDate = DateTime.UtcNow,
+                    EntityState.Modified => data.Entity.UpdateTime = DateTime.UtcNow
+
+                } ;
+
+            }
+            
+
+
+            return await base.SaveChangesAsync(cancellationToken);
+        }
     }
 }

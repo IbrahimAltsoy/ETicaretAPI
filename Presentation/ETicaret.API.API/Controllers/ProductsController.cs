@@ -20,28 +20,53 @@ namespace ETicaret.API.API.Controllers
         //}
         readonly private IProductWriteRepository _productWriteRepository;
         readonly private IProductReadRepository _productReadRepository;
+        readonly private IOrderWriteRepository _orderWriteRepository;
+        readonly private IOrderReadRepository _orderReadRepository;
+        readonly private ICustomerWriteRepository _customerWriteRepository;
 
-        public ProductsController(IProductWriteRepository productWriteRepository, IProductReadRepository productReadRepository)
+        public ProductsController(IProductWriteRepository productWriteRepository, IProductReadRepository productReadRepository, IOrderWriteRepository orderWriteRepository, IOrderReadRepository orderReadRepository, ICustomerWriteRepository customerWriteRepository)
         {
             _productWriteRepository = productWriteRepository;
             _productReadRepository = productReadRepository;
+            _orderWriteRepository = orderWriteRepository;
+            _orderReadRepository = orderReadRepository;
+            _customerWriteRepository = customerWriteRepository;
         }
         [HttpGet]
         public async Task Get()
         {
-            await _productWriteRepository.AddRangeAsync(new()
-            {
-                new(){Id=Guid.NewGuid(), Name="Product 7", Price=100, CreatedDate=DateTime.UtcNow, Stock=25},
-                new(){Id=Guid.NewGuid(), Name="Product 8", Price=200, CreatedDate=DateTime.UtcNow, Stock=107},
-                new(){Id=Guid.NewGuid(), Name="Product 9", Price=430, CreatedDate=DateTime.UtcNow, Stock=185},
-            });
-            await _productWriteRepository.SaveAsync();
+            //await _productWriteRepository.AddRangeAsync(new()
+            //{
+            //    new(){Id=Guid.NewGuid(), Name="Product 7", Price=100, CreatedDate=DateTime.UtcNow, Stock=25},
+            //    new(){Id=Guid.NewGuid(), Name="Product 8", Price=200, CreatedDate=DateTime.UtcNow, Stock=107},
+            //    new(){Id=Guid.NewGuid(), Name="Product 9", Price=430, CreatedDate=DateTime.UtcNow, Stock=185},
+            //});
+            //await _productWriteRepository.SaveAsync();
+
+
+            //Product p = await _productReadRepository.GetByIdAsync("34efdd7d-8940-4542-b759-e48badc533fd");
+            //p.Name = "Laptop";
+            //await _productWriteRepository.SaveAsync();
+            //await _productWriteRepository.AddAsync(new(){Name="IPhene 13", Price=32.700F, Stock=23, CreatedDate=DateTime.UtcNow });
+            //_productWriteRepository.SaveAsync();
+
+            //var customerId = Guid.NewGuid();
+            // await _customerWriteRepository.AddAsync(new() { Id=customerId, Name="ibrahim"});
+
+            // await _orderWriteRepository.AddAsync(new() {Description ="Merhaba", Adress="İstanbul", CustomerId=customerId   });
+            // await _orderWriteRepository.AddAsync(new() { Description = "Selam", Adress = "Kadiköy", CustomerId = customerId });
+            // await _orderWriteRepository.SaveAsync();
+
+            Order order = await _orderReadRepository.GetByIdAsync("c2d4eeba-823d-43e3-8444-71ac880a2eff");
+            order.Description = "İstanbul Avcılar";
+            await _orderWriteRepository.SaveAsync();
+
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(string id)
         {
             Product product = await _productReadRepository.GetByIdAsync(id);
             return Ok(product);
-        }
+        }   
     }
 }
